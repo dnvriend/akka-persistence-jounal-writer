@@ -1,6 +1,6 @@
 name := "akka-persistence-journal-writer"
 
-version := "0.0.1-SNAPSHOT"
+version := "0.0.1"
 
 organization := "com.github.dnvriend"
 
