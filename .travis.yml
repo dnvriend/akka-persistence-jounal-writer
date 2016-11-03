@@ -1,0 +1,17 @@
+language: scala
+sudo: false
+scala:
+  - "2.11.8"
+jdk:
+  - oraclejdk8
+branches:
+  only:
+    - master
+notifications:
+  email:
+    - dnvriend@gmail.com
+script: "./build.sh"
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
