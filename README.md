@@ -15,7 +15,7 @@ Add the following to your `build.sbt`:
 // the library is available in Bintray's JCenter
 resolvers += Resolver.jcenterRepo
 
-libraryDependencies += "com.github.dnvriend" %% "akka-persistence-journal-writer" % "0.0.1"
+libraryDependencies += "com.github.dnvriend" %% "akka-persistence-journal-writer" % "0.0.2"
 ```
 
 ## Contribution policy
