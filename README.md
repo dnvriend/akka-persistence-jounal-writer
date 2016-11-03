@@ -1,8 +1,7 @@
-# akka-persistence-jounal-writer
+# akka-persistence-journal-writer
 
-[![Build Status](https://travis-ci.org/dnvriend/akka-persistence-inmemory.svg?branch=master)](https://travis-ci.org/dnvriend/akka-persistence-inmemory)
-[![Download](https://api.bintray.com/packages/dnvriend/maven/akka-persistence-inmemory/images/download.svg) ](https://bintray.com/dnvriend/maven/akka-persistence-inmemory/_latestVersion)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2cedef156eaf441fbe867becfc5fcb24)](https://www.codacy.com/app/dnvriend/akka-persistence-inmemory?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dnvriend/akka-persistence-inmemory&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/dnvriend/akka-persistence-journal-writer.svg?branch=master)](https://travis-ci.org/dnvriend/akka-persistence-inmemory)
+[![Download](https://api.bintray.com/packages/dnvriend/maven/akka-persistence-journal-writer/images/download.svg) ](https://bintray.com/dnvriend/maven/akka-persistence-inmemory/_latestVersion)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 __akka-persistence-query-writer__ consists of an akka-streams `Flow` and `Sink` that makes it possible to write
@@ -16,7 +15,7 @@ Add the following to your `build.sbt`:
 // the library is available in Bintray's JCenter
 resolvers += Resolver.jcenterRepo
 
-libraryDependencies += "com.github.dnvriend" %% "akka-persistence-query-writer" % "0.0.1"
+libraryDependencies += "com.github.dnvriend" %% "akka-persistence-journal-writer" % "0.0.1"
 ```
 
 ## Contribution policy
