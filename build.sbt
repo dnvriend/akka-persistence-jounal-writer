@@ -1,10 +1,14 @@
 name := "akka-persistence-journal-writer"
 
-version := "0.0.1"
+version := "0.0.2"
 
 organization := "com.github.dnvriend"
 
 scalaVersion := "2.11.8"
+
+crossScalaVersions := Seq("2.11.8", "2.12.0")
+
+resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= {
   val akkaVersion = "2.4.12"
@@ -15,7 +19,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
-    "com.github.dnvriend" %% "akka-persistence-inmemory" % "1.3.13" % Test,
+    "com.github.dnvriend" %% "akka-persistence-inmemory" % "1.3.14" % Test,
     "commons-io" % "commons-io" % "2.5" % Test,
     "org.iq80.leveldb" % "leveldb" % "0.7" % Test,
     "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8" % Test,

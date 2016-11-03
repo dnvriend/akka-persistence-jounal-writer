@@ -132,6 +132,9 @@ This will have no persistent-actor life cycle overhead and will be much faster.
 Its only applicable in some use cases of course.
 
 # What's new?
+## 0.0.2 (2016-11-03)
+  - cross scala 2.11.8 and 2.12.0 build against akka 2.4.12
+
 ## 0.0.1 (2016-11-03)
   - First release
 
