@@ -1,29 +1,38 @@
-name := "akka-persistence-journal-writer"
+import sbt._
+import sbt.Keys._
 
-version := "0.0.2"
+name := "akka-persistence-journal-writer"
 
 organization := "com.github.dnvriend"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.6"
 
-crossScalaVersions := Seq("2.11.8", "2.12.0")
+crossScalaVersions := Seq("2.11.8", "2.12.6")
 
 resolvers += Resolver.jcenterRepo
+externalResolvers ++= Seq(
+  "dnvriend" at "https://dl.bintray.com/dnvriend/maven"
+)
 
 libraryDependencies ++= {
-  val akkaVersion = "2.4.12"
+  val akkaVersion = "2.5.15"
+  val akkaPersistenceInMemoryVersion = "2.5.1.2"
+  val commonIoVersion = "2.6"
+  val leveldbVersion = "0.10"
+  val leveldbJniVersion = "1.8"
+  val scalaTestVersion = "3.0.5"
   Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
-    "com.typesafe.akka" %% "akka-persistence-query-experimental" % akkaVersion,
+    "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream" % akkaVersion,
     "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
-    "com.github.dnvriend" %% "akka-persistence-inmemory" % "1.3.14" % Test,
-    "commons-io" % "commons-io" % "2.5" % Test,
-    "org.iq80.leveldb" % "leveldb" % "0.7" % Test,
-    "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8" % Test,
-    "org.scalatest" %% "scalatest" % "3.0.0" % Test
+    "com.github.dnvriend" %% "akka-persistence-inmemory" % akkaPersistenceInMemoryVersion % Test,
+    "commons-io" % "commons-io" % commonIoVersion % Test,
+    "org.iq80.leveldb" % "leveldb" % leveldbVersion % Test,
+    "org.fusesource.leveldbjni" % "leveldbjni-all" % leveldbJniVersion % Test,
+    "org.scalatest" %% "scalatest" % scalaTestVersion % Test
   )
 }
 
@@ -42,14 +51,11 @@ import scalariform.formatter.preferences._
 SbtScalariform.autoImport.scalariformPreferences := SbtScalariform.autoImport.scalariformPreferences.value
   .setPreference(AlignSingleLineCaseStatements, true)
   .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-  .setPreference(DoubleIndentClassDeclaration, true)
+  .setPreference(DoubleIndentConstructorArguments, true)
 
 // enable updating file headers //
-import de.heikoseeberger.sbtheader.license.Apache2_0
 
-headers := Map(
-  "scala" -> Apache2_0("2016", "Dennis Vriend"),
-  "conf" -> Apache2_0("2016", "Dennis Vriend", "#")
-)
+import de.heikoseeberger.sbtheader._
+headerLicense := Some(HeaderLicense.ALv2("2016", "Dennis Vriend"))
 
 enablePlugins(AutomateHeaderPlugin)
