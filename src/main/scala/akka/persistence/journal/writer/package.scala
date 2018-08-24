@@ -18,14 +18,14 @@ package akka.persistence.journal
 
 import akka.actor.{ ActorContext, ActorRef }
 import akka.persistence.JournalProtocol.WriteMessages
-import akka.persistence.query.{ EventEnvelope, EventEnvelope2 }
+import akka.persistence.query.EventEnvelope
 import akka.persistence.{ AtomicWrite, PersistentRepr }
 
 import scala.collection.immutable.{ Map, Seq }
 import scala.reflect.ClassTag
 
 package object writer {
-  val unsupported: Throwable = new IllegalArgumentException("JournalWriter only accepts EventEnvelope, immutable.Seq[EventEnvelope], EventEnvelope2 and immutable.Seq[EventEnvelope2]")
+  val unsupported: Throwable = new IllegalArgumentException("JournalWriter only accepts EventEnvelope, immutable.Seq[EventEnvelope]")
 
   def replyWithFailure(replyTo: ActorRef, cause: Throwable = unsupported)(implicit ctx: ActorContext, self: ActorRef): Unit = {
     replyTo ! akka.actor.Status.Failure(cause)
@@ -47,8 +47,7 @@ package object writer {
     PersistentRepr(
       payload = env.event,
       sequenceNr = env.sequenceNr,
-      persistenceId = env.persistenceId
-    )
+      persistenceId = env.persistenceId)
 
   def listOfEnvelopeToRepr(xs: Seq[EventEnvelope]): Seq[PersistentRepr] =
     xs.map(toPersistentRepr)
@@ -63,9 +62,6 @@ package object writer {
         .mapValues(listOfReprToAtomicWrite)
     Seq(groupedByPid.values.toList: _*)
   }
-
-  def toEventEnvelope(x: EventEnvelope2): EventEnvelope =
-    EventEnvelope(0L, x.persistenceId, x.sequenceNr, x.event)
 
   def writeMessages(xs: Seq[EventEnvelope], writerJournalAdapter: ActorRef): WriteMessages =
     WriteMessages(toAtomicWrite(xs), writerJournalAdapter, 1)

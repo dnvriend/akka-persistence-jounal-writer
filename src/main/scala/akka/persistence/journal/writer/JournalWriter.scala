@@ -20,7 +20,7 @@ import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
 import akka.pattern.ask
 import akka.persistence.JournalProtocol._
 import akka.persistence.Persistence
-import akka.persistence.query.{ EventEnvelope, EventEnvelope2 }
+import akka.persistence.query.EventEnvelope
 import akka.stream.scaladsl._
 import akka.util.Timeout
 import akka.{ Done, NotUsed }
@@ -61,12 +61,8 @@ class WriteJournalAdapter(writePlugin: ActorRef) extends Actor {
       cameo(sender(), writePlugin, Seq.empty[EventEnvelope])
     case messages: Seq[_] if messages.is[EventEnvelope] =>
       cameo(sender(), writePlugin, messages.as[EventEnvelope])
-    case messages: Seq[_] if messages.is[EventEnvelope2] =>
-      cameo(sender(), writePlugin, messages.as[EventEnvelope2].map(toEventEnvelope))
     case msg: EventEnvelope =>
       cameo(sender(), writePlugin, Seq(msg))
-    case msg: EventEnvelope2 =>
-      cameo(sender(), writePlugin, Seq(toEventEnvelope(msg)))
     case _ =>
       replyWithFailure(sender(), unsupported)
   }
@@ -74,7 +70,7 @@ class WriteJournalAdapter(writePlugin: ActorRef) extends Actor {
 
 object JournalWriter {
   def flow[A](journalPluginId: String, parallelism: Int = 1)(implicit system: ActorSystem, ec: ExecutionContext, ct: ClassTag[A], timeout: Timeout = Timeout(1.minute)): Flow[A, A, NotUsed] = {
-    assert(ct.runtimeClass == classOf[EventEnvelope] || ct.runtimeClass == classOf[EventEnvelope2] || ct.runtimeClass == classOf[Seq[EventEnvelope]] || ct.runtimeClass == classOf[Seq[EventEnvelope2]], s"element must be of type EventEnvelope, EventEnvelope2, immutable.Seq[EventEnvelope] or immutable.Seq[EventEnvelope2], type is: '${ct.runtimeClass}'")
+    assert(ct.runtimeClass == classOf[EventEnvelope] || ct.runtimeClass == classOf[Seq[EventEnvelope]], s"element must be of type EventEnvelope, immutable.Seq[EventEnvelope], type is: '${ct.runtimeClass}'")
     val journal: ActorRef = Persistence(system).journalFor(journalPluginId)
     val journalAdapter: ActorRef = system.actorOf(Props(new WriteJournalAdapter(journal)))
     Flow[A].mapAsync(parallelism)(element => (journalAdapter ? element).map(_ => element))

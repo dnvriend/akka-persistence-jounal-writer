@@ -5,7 +5,7 @@
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 __akka-persistence-query-writer__ consists of an akka-streams `Flow` and `Sink` that makes it possible to write
-`EventEnvelope` , `Seq[EventEnvelope]`, `EventEnvelope2` or `Seq[EventEnvelope2]` to __any__ akka-persistence jounal.
+`EventEnvelope` , `Seq[EventEnvelope]` to __any__ akka-persistence jounal.
 It does this by sending messages directly to the [journal plugin itself](http://doc.akka.io/api/akka/2.4/#akka.persistence.journal.japi.AsyncWriteJournal).
 
 ## Installation
@@ -15,7 +15,7 @@ Add the following to your `build.sbt`:
 // the library is available in Bintray's JCenter
 resolvers += Resolver.jcenterRepo
 
-libraryDependencies += "com.github.dnvriend" %% "akka-persistence-journal-writer" % "0.0.2"
+libraryDependencies += "com.github.dnvriend" %% "akka-persistence-journal-writer" % "0.0.4"
 ```
 
 ## Contribution policy
@@ -26,12 +26,11 @@ Contributions via GitHub pull requests are gladly accepted from their original a
 This code is open source software licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
 
 ## Basic Use Case
-The `akka-persistence-journal-writer` lets you write events to any journal. It accepts only two types of messages:
+The `akka-persistence-journal-writer` lets you write events to any journal. It accepts:
 
 - [akka.persistence.query.EventEnvelope](http://doc.akka.io/api/akka/2.4/#akka.persistence.query.EventEnvelope)
-- [akka.persistence.query.EventEnvelope2](http://doc.akka.io/api/akka/2.4/#akka.persistence.query.EventEnvelope2)
 
-Of course, you can send `immutable.Seq[EventEnvelope]` or `immutable.Seq[EventEnvelope2]` of those too for bulk loading.
+Of course, you can send `immutable.Seq[EventEnvelope]` of those too for bulk loading.
 
 The basic use case would be loading one event store into another. In this example we will be loading events from
 the inmemory-journal, using akka-persistence-query and loading the events into the level-db journal:

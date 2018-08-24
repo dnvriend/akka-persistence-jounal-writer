@@ -20,7 +20,7 @@ import akka.actor.{ ActorRef, Props }
 import akka.persistence.{ AtomicWrite, PersistentImpl, PersistentRepr }
 import akka.persistence.JournalProtocol._
 import akka.persistence.journal.TestSpec
-import akka.persistence.query.{ EventEnvelope, EventEnvelope2, NoOffset }
+import akka.persistence.query.{ EventEnvelope, NoOffset }
 import akka.testkit.TestProbe
 
 import scala.concurrent.duration._
@@ -36,9 +36,8 @@ class WriteJournalAdapterTest extends TestSpec {
 
   it should "map a Seq[EventEnvelope] to a WriteMessages that has two persistenceIds" in {
     val write: WriteMessages = writeMessages(Seq(
-      EventEnvelope(0, "pid1", 1L, "foo"),
-      EventEnvelope(0, "pid2", 1L, "foo")
-    ), null)
+      EventEnvelope(NoOffset, "pid1", 1L, "foo"),
+      EventEnvelope(NoOffset, "pid2", 1L, "foo")), null)
     write.messages.size shouldBe 2 // there are two atomic writes
     val aw1 = write.messages.map(_.asInstanceOf[AtomicWrite]).filter(_.persistenceId == "pid1").head
     validateAtomicWrite(aw1, "pid1")
@@ -55,70 +54,51 @@ class WriteJournalAdapterTest extends TestSpec {
 
   it should "send no instructions to write an empty Seq" in withJournal { sink => journal => adapter =>
     sink.send(adapter, Seq.empty[EventEnvelope])
-    journal.expectNoMsg(100.millis)
+    journal.expectNoMessage(100.millis)
     sink.expectMsg("ack")
   }
 
   it should "send instructions to write an EventEnvelope" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, EventEnvelope(0L, "pid1", 1L, "foo"))
+    sink.send(adapter, EventEnvelope(NoOffset, "pid1", 1L, "foo"))
     journal.expectMsgPF() { case WriteMessages(List(AtomicWrite(List(PersistentImpl("foo", 1L, "pid1", _, _, _, _)))), _, _) => }
     journal.reply(WriteMessagesSuccessful)
     sink.expectMsg("ack")
   }
 
   it should "send instructions to write a Seq[EventEnvelope]" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, Seq(EventEnvelope(0L, "pid1", 1L, "foo")))
+    sink.send(adapter, Seq(EventEnvelope(NoOffset, "pid1", 1L, "foo")))
     journal.expectMsgPF() { case WriteMessages(Seq(AtomicWrite(Seq(PersistentRepr("foo", 1L)))), _, _) => }
     journal.reply(WriteMessagesSuccessful)
     sink.expectMsg("ack")
 
-    sink.send(adapter, Seq(EventEnvelope(0L, "pid1", 1L, "foo"), EventEnvelope(0L, "pid1", 2L, "bar")))
+    sink.send(adapter, Seq(EventEnvelope(NoOffset, "pid1", 1L, "foo"), EventEnvelope(NoOffset, "pid1", 2L, "bar")))
     journal.expectMsgPF() { case WriteMessages(Seq(AtomicWrite(Seq(PersistentImpl("foo", 1L, "pid1", _, _, _, _), PersistentImpl("bar", 2L, "pid1", _, _, _, _)))), _, _) => }
-    journal.reply(WriteMessagesSuccessful)
-    sink.expectMsg("ack")
-  }
-
-  it should "send instructions to write an EventEnvelope2" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, EventEnvelope2(NoOffset, "pid2", 1L, "foo"))
-    journal.expectMsgPF() { case WriteMessages(List(AtomicWrite(List(PersistentImpl("foo", 1L, "pid2", _, _, _, _)))), _, _) => }
-    journal.reply(WriteMessagesSuccessful)
-    sink.expectMsg("ack")
-  }
-
-  it should "send instructions to write a Seq[EventEnvelope2]" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, Seq(EventEnvelope2(NoOffset, "pid2", 1L, "foo")))
-    journal.expectMsgPF() { case WriteMessages(Seq(AtomicWrite(Seq(PersistentImpl("foo", 1L, "pid2", _, _, _, _)))), _, _) => }
-    journal.reply(WriteMessagesSuccessful)
-    sink.expectMsg("ack")
-
-    sink.send(adapter, Seq(EventEnvelope2(NoOffset, "pid2", 1L, "foo"), EventEnvelope2(NoOffset, "pid2", 2L, "bar")))
-    journal.expectMsgPF() { case WriteMessages(Seq(AtomicWrite(Seq(PersistentImpl("foo", 1L, "pid2", _, _, _, _), PersistentImpl("bar", 2L, "pid2", _, _, _, _)))), _, _) => }
     journal.reply(WriteMessagesSuccessful)
     sink.expectMsg("ack")
   }
 
   it should "fail on all other messages" in withJournal { sink => journal => adapter =>
     sink.send(adapter, "foo")
-    journal.expectNoMsg(100.millis)
+    journal.expectNoMessage(100.millis)
     sink.expectMsg(akka.actor.Status.Failure(unsupported))
   }
 
   it should "fail the sink when journal fails writing messages" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, EventEnvelope(0L, "pid1", 1L, "foo"))
+    sink.send(adapter, EventEnvelope(NoOffset, "pid1", 1L, "foo"))
     journal.expectMsgPF() { case WriteMessages(List(AtomicWrite(List(PersistentImpl("foo", 1L, "pid1", _, _, _, _)))), _, _) => }
     journal.reply(WriteMessagesFailed(mockFailure))
     sink.expectMsg(akka.actor.Status.Failure(mockFailure))
   }
 
   it should "fail the sink when journal fails writing a message" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, EventEnvelope(0L, "pid1", 1L, "foo"))
+    sink.send(adapter, EventEnvelope(NoOffset, "pid1", 1L, "foo"))
     journal.expectMsgPF() { case WriteMessages(List(AtomicWrite(List(PersistentImpl("foo", 1L, "pid1", _, _, _, _)))), _, _) => }
     journal.reply(WriteMessageFailure(null, mockFailure, 1))
     sink.expectMsg(akka.actor.Status.Failure(mockFailure))
   }
 
   it should "fail the sink when journal rejects a message" in withJournal { sink => journal => adapter =>
-    sink.send(adapter, EventEnvelope(0L, "pid1", 1L, "foo"))
+    sink.send(adapter, EventEnvelope(NoOffset, "pid1", 1L, "foo"))
     journal.expectMsgPF() { case WriteMessages(List(AtomicWrite(List(PersistentImpl("foo", 1L, "pid1", _, _, _, _)))), _, _) => }
     journal.reply(WriteMessageRejected(null, mockFailure, 1))
     sink.expectMsg(akka.actor.Status.Failure(mockFailure))
